@@ -1,4 +1,3 @@
-from aifc import Aifc_write
 
 #file1 = open('datatest.txt', 'r')
 file1 = open('data.txt', 'r')
@@ -33,28 +32,40 @@ def removeSmallest(numberstring:str):
 
 def highNumbers2(joltage:str):
     counter = 0
-    max_attempts = len(joltage)-12
-    while len(joltage) > 12 and counter < max_attempts:
-        joltage_len = len(joltage)
-        for i in range(joltage_len-1):
-            char1 = joltage[i]
-            char2 = joltage[i + 1]
-            if len(joltage.replace("0","")) >12:
-                joltage_len = len(joltage.replace("0",""))
-                if joltage[i] < joltage[i+1]:
-                    newjoltage = joltage[:i] + "0" + joltage[i + 1:]
-                    joltage = newjoltage
-        result = joltage.replace("0","")
-        counter += 1
-        joltage  = result
-    while len(result) >12:
-        result = result[:len(result)-1]
-    return result
+    #1 we take the last 12 numbers
+    #2 then add the number in front
+    #3 if #13 the number is smaller #12, then dump it
+    #4 else check if number 12, 11, 10 is smaller. the first smallest gets popped
 
-total = 0
+    while len(joltage) > 12:
+        joltage_len = len(joltage)
+        joltage_12 = joltage[joltage_len-12:]
+        joltage_13 = joltage[joltage_len-13]
+        if  joltage_13 < joltage_12[0]: #if new character is smaller,then remove that character
+            joltage = joltage[0:joltage_len-13] + joltage_12
+        else:
+            for i in range(1,12):
+                char1 = joltage_12[i - 1]
+                char2 = joltage_12[i]
+                if joltage_12[i-1] < joltage_12[i]: #if number is in joltage is smallest then remove i-1
+                    newjoltage = joltage_12[:i-1] + joltage_12[i:] # remove smallest
+                    joltage = joltage[0:joltage_len-12] + newjoltage
+                    break
+                if int(i) == 11:
+                    joltage = joltage[0:joltage_len-1]
+        counter += 1
+
+    return joltage
+
+total1 = total2 = 0
 for line in Lines:
     line = line.replace('\n', '')
-    result = highNumbers2(line)
-    total += int(result)
 
-    print(f"Input {line} with result: {result} to the total output joltage becomes :  {total}.")
+    result1 = highNumbers1(line)
+    total1 += int(result1)
+
+    result2 = highNumbers2(line)
+    total2 += int(result2)
+
+print(f"Answer part 1:  {total1}.")
+print(f"Answer part 2:  {total2}.")
